@@ -1,0 +1,33 @@
+module StopTimer_tb;
+
+logic clk, rst_n, start, stop, reset;
+logic [15:0] elapsed_time;
+
+StopTimer uut (
+    .clk(clk), .rst_n(rst_n),
+    .start(start), .stop(stop), .reset(reset),
+    .elapsed_time(elapsed_time)
+);
+
+initial clk=0; always #5 clk=~clk;
+
+initial begin
+    $dumpfile("dump.vcd"); $dumpvars;
+    rst_n=0; start=0; stop=0; reset=0;
+    #12; rst_n=1;
+    // start stopwatch
+    #10; start=1; #10; start=0;
+    #50; // running
+    // stop
+    #10; stop=1; #10; stop=0;
+    #20;
+    // start again
+    #10; start=1; #10; start=0;
+    #30;
+    // reset
+    #10; reset=1; #10; reset=0;
+    #20;
+    $finish;
+end
+
+endmodule
