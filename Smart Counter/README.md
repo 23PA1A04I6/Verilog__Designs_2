@@ -1,31 +1,22 @@
 The Smart Counter is an advanced digital counter that goes beyond simple counting.
 It can include features like:
 
-Up/Down counting
-
-Loadable initial value
-
-Enable/pause counting
-
-Overflow / underflow detection
-
-Reset to default value
+1.Up/Down counting
+2.Loadable initial value
+3.Enable/pause counting
+4.Overflow / underflow detection
+5.Reset to default value
 
 Smart counters are widely used in:
 
-Digital timers
-
-Event counting
-
-Frequency measurement
-
-Programmable digital systems and FPGAs
+1.Digital timers
+2.Event counting
+3.Frequency measurement
+4.Programmable digital systems and FPGAs
 
 This repository contains:
 
-RTL design files (Verilog/SystemVerilog)
-
-Testbench files for verification
-
-Instructions to run and view simulations
+1.RTL design files (Verilog/SystemVerilog)
+2.Testbench files for verification
+3.Instructions to run and view simulations
 
