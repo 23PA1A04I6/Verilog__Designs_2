@@ -1,0 +1,36 @@
+module ByteStreamer_tb;
+
+logic clk, rst_n, shift_enable, serial_in;
+logic [7:0] parallel_out;
+logic ready;
+
+ByteStreamer uut (
+    .clk(clk),
+    .rst_n(rst_n),
+    .shift_enable(shift_enable),
+    .serial_in(serial_in),
+    .parallel_out(parallel_out),
+    .ready(ready)
+);
+
+initial clk = 0;
+always #5 clk = ~clk;
+
+initial begin
+  $dumpfile("dump.vcd"); $dumpvars(0,ByteStreamer_tb);
+    rst_n = 0; shift_enable = 0; serial_in = 0;
+    #12;
+    rst_n = 1;
+    #10;
+    // feed bits 10101010
+    repeat (8) begin
+        shift_enable = 1;
+        serial_in = $random % 2;
+        #10;
+    end
+    shift_enable = 0;
+    #20;
+    $finish;
+end
+
+endmodule
