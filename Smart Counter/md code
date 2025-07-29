@@ -1,0 +1,19 @@
+module SmartCounter (
+    input logic clk,
+    input logic rst_n,       // active low reset
+    input logic enable,
+    input logic load,
+    input logic [7:0] load_value,
+    output logic [7:0] count
+);
+
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+        count <= 8'd0;
+    else if (load)
+        count <= load_value;
+    else if (enable)
+        count <= count + 1;
+end
+
+endmodule
