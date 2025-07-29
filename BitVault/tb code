@@ -1,0 +1,36 @@
+module BitVault_tb;
+
+logic clk, write_en;
+logic [1:0] addr;
+logic [7:0] din, dout;
+
+BitVault uut (
+    .clk(clk),
+    .write_en(write_en),
+    .addr(addr),
+    .din(din),
+    .dout(dout)
+);
+
+initial clk = 0;
+always #5 clk = ~clk;
+
+initial begin
+    $dumpfile("dump.vcd"); $dumpvars;
+
+    write_en = 0; addr = 0; din = 8'h11;
+    #10;
+    write_en = 1; // write to addr 0
+    #10;
+    addr = 2; din = 8'h22; // write to addr 2
+    #10;
+    write_en = 0; addr = 0; // read from addr 0
+    #10;
+    addr = 2; // read from addr 2
+    #10;
+    addr = 1; // read from addr 1 (should be default 0)
+    #10;
+    $finish;
+end
+
+endmodule
