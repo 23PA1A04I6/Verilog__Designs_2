@@ -1,0 +1,23 @@
+module SafeALU_tb;
+
+logic [7:0] a, b, result;
+logic [1:0] opcode;
+logic zero, carry, overflow;
+
+SafeALU uut (
+    .a(a), .b(b), .opcode(opcode),
+    .result(result),
+    .zero(zero), .carry(carry), .overflow(overflow)
+);
+
+initial begin
+    $dumpfile("dump.vcd"); $dumpvars;
+    a=8'd10; b=8'd5; opcode=2'b00; #10; // ADD
+    opcode=2'b01; #10; // SUB
+    opcode=2'b10; #10; // AND
+    opcode=2'b11; #10; // OR
+    a=8'd127; b=8'd1; opcode=2'b00; #10; // check overflow
+    $finish;
+end
+
+endmodule
