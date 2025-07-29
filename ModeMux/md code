@@ -1,0 +1,45 @@
+module ModeMux (
+    input  logic clk,
+    input  logic rst_n,
+    input  logic mode,            // 0: fixed priority, 1: round robin
+    input  logic [3:0] req,
+    input  logic [7:0] din0, din1, din2, din3,
+    output logic [7:0] dout
+);
+
+logic [1:0] last_grant;
+logic [7:0] din_array[3:0];
+
+assign din_array[0] = din0;
+assign din_array[1] = din1;
+assign din_array[2] = din2;
+assign din_array[3] = din3;
+
+// Round-robin update without loop / automatic variables
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+        last_grant <= 0;
+    else if (mode == 1) begin
+        if      (req[(last_grant+1)%4]) last_grant <= (last_grant+1)%4;
+        else if (req[(last_grant+2)%4]) last_grant <= (last_grant+2)%4;
+        else if (req[(last_grant+3)%4]) last_grant <= (last_grant+3)%4;
+        else if (req[last_grant])       last_grant <= last_grant;
+        // else hold
+    end
+end
+
+// Mux output logic
+always_comb begin
+    if (mode == 0) begin // fixed priority
+        if      (req[0]) dout = din_array[0];
+        else if (req[1]) dout = din_array[1];
+        else if (req[2]) dout = din_array[2];
+        else if (req[3]) dout = din_array[3];
+        else              dout = 8'h00;
+    end else begin // round robin
+        dout = (req[last_grant]) ? din_array[last_grant] : 8'h00;
+    end
+end
+
+endmodule
+
