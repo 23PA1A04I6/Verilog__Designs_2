@@ -1,0 +1,40 @@
+module StopTimer (
+    input logic clk,
+    input logic rst_n,
+    input logic start,
+    input logic stop,
+    input logic reset,
+    output logic [15:0] elapsed_time
+);
+
+typedef enum logic [1:0] {IDLE, RUNNING, STOPPED} state_t;
+state_t state, next_state;
+
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+        state <= IDLE;
+    else
+        state <= next_state;
+end
+
+always_comb begin
+    next_state = state;
+    case (state)
+        IDLE:    if (start) next_state = RUNNING;
+        RUNNING: if (stop)  next_state = STOPPED;
+        STOPPED: if (reset) next_state = IDLE;
+                 else if (start) next_state = RUNNING;
+    endcase
+end
+
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+        elapsed_time <= 0;
+    else if (state == RUNNING)
+        elapsed_time <= elapsed_time + 1;
+    else if (state == IDLE)
+        elapsed_time <= 0;
+end
+
+endmodule
+
