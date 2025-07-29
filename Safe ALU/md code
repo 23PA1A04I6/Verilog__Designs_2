@@ -1,0 +1,27 @@
+module SafeALU (
+    input logic [7:0] a, b,
+    input logic [1:0] opcode,
+    output logic [7:0] result,
+    output logic zero, carry, overflow
+);
+
+logic [8:0] tmp;
+
+always_comb begin
+    case(opcode)
+        2'b00: tmp = a + b;      // ADD
+        2'b01: tmp = a - b;      // SUB
+        2'b10: tmp = {1'b0, a & b};
+        2'b11: tmp = {1'b0, a | b};
+        default: tmp = 9'd0;
+    endcase
+end
+
+assign result = tmp[7:0];
+assign carry = tmp[8];
+assign zero = (result == 8'd0);
+assign overflow = (opcode == 2'b00) ? ((a[7] == b[7]) && (result[7] != a[7])) :
+                  (opcode == 2'b01) ? ((a[7] != b[7]) && (result[7] != a[7])) : 0;
+
+endmodule
+
