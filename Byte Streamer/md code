@@ -1,0 +1,24 @@
+module ByteStreamer (
+    input logic clk,
+    input logic rst_n,
+    input logic shift_enable,
+    input logic serial_in,
+    output logic [7:0] parallel_out,
+    output logic ready
+);
+
+logic [2:0] bit_count;
+
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        parallel_out <= 8'd0;
+        bit_count <= 0;
+    end else if (shift_enable) begin
+        parallel_out <= {parallel_out[6:0], serial_in};
+        bit_count <= bit_count + 1;
+    end
+end
+
+assign ready = (bit_count == 3'd7) && shift_enable;
+
+endmodule
