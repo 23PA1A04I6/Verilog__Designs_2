@@ -1,0 +1,36 @@
+module RingBuffer (
+    input logic clk,
+    input logic rst_n,
+    input logic write_en,
+    input logic read_en,
+    input logic [7:0] din,
+    output logic [7:0] dout,
+    output logic full, empty
+);
+
+parameter DEPTH = 4;
+logic [7:0] mem [DEPTH-1:0];
+logic [1:0] rd_ptr, wr_ptr;
+logic [2:0] count;
+
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        rd_ptr <= 0; wr_ptr <= 0; count <= 0;
+    end else begin
+        if (write_en && !full) begin
+            mem[wr_ptr] <= din;
+            wr_ptr <= wr_ptr + 1;
+            count <= count + 1;
+        end
+        if (read_en && !empty) begin
+            dout <= mem[rd_ptr];
+            rd_ptr <= rd_ptr + 1;
+            count <= count - 1;
+        end
+    end
+end
+
+assign full = (count == DEPTH);
+assign empty = (count == 0);
+
+endmodule
