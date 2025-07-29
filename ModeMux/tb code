@@ -1,0 +1,38 @@
+module ModeMux_tb;
+
+logic clk = 0, rst_n, mode;
+logic [3:0] req;
+logic [7:0] din[3:0], dout;
+
+// Clock generation
+always #5 clk = ~clk;
+
+// DUT instantiation with separate din ports
+ModeMux uut (
+    .clk(clk), .rst_n(rst_n), .mode(mode), .req(req),
+    .din0(din[0]), .din1(din[1]), .din2(din[2]), .din3(din[3]),
+    .dout(dout)
+);
+
+initial begin
+    $dumpfile("dump.vcd"); $dumpvars;
+
+    rst_n = 0; mode = 0; req = 4'b0000;
+    din[0] = 8'hA1; din[1] = 8'hB2; din[2] = 8'hC3; din[3] = 8'hD4;
+    #12; rst_n = 1;
+
+    // Fixed priority mode: multiple requests
+    req = 4'b1010; #20;   // should pick din[1] because req[1]=1 and has higher priority than req[3]
+    req = 4'b0100; #20;   // should pick din[2]
+
+    // Switch to round robin mode
+    mode = 1;
+    req = 4'b1111; #100;  // observe last_grant rotating among requesters
+
+    // Back to fixed priority
+    mode = 0; req = 4'b0010; #20;  // should pick din[1]
+
+    $finish;
+end
+
+endmodule
